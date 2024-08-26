@@ -1,6 +1,5 @@
 package com.example.voistask.viewModel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,7 +36,6 @@ class SearchViewModel(private val userRepository: UserRepository) : ViewModel() 
         _showInitialText.value = false
         _isLoading.value = true
 
-        // Reset pagination and users list for new search
         _users.value = emptyList()
         isLastPage = false
         currentPage = 1
@@ -46,7 +44,7 @@ class SearchViewModel(private val userRepository: UserRepository) : ViewModel() 
             try {
                 val fetchedUsers = userRepository.fetchUsers(_username.value ?: "", currentPage)
                 _users.value = fetchedUsers
-                isLastPage = fetchedUsers.isEmpty() // Considered as the last page if no users are returned
+                isLastPage = fetchedUsers.isEmpty()
             } catch (_: Exception) {
             } finally {
                 _isLoading.value = false
@@ -68,8 +66,7 @@ class SearchViewModel(private val userRepository: UserRepository) : ViewModel() 
                 } else {
                     isLastPage = true
                 }
-            } catch (e: Exception) {
-                // Handle exception
+            } catch (_: Exception) {
             } finally {
                 _isPaginating.value = false
             }

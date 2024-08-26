@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName
 data class User(
     val login: String,
     val id: Int,
+    val name: String?,
+    val location: String?,
+    val bio: String?,
     @SerializedName("avatar_url") val avatarUrl: String,
     @SerializedName("html_url") val htmlUrl: String
 )

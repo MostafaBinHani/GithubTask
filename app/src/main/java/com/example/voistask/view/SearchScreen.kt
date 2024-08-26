@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,7 +25,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,12 +34,12 @@ import com.example.voistask.model.User
 import com.example.voistask.ui.theme.FadedBlack
 import com.example.voistask.ui.theme.SecondaryColor
 import com.example.voistask.viewModel.SearchViewModel
-import coil.compose.rememberImagePainter
 import com.example.voistask.ui.theme.PrimaryColor
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = viewModel()
+    viewModel: SearchViewModel = viewModel(),
+    onUserClick: (User) -> Unit
 ) {
     val users by viewModel.users.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
@@ -48,8 +48,6 @@ fun SearchScreen(
     val showInitialText by viewModel.showInitialText.observeAsState(true)
 
     val listState = rememberLazyListState()
-
-    // Animate the top padding of the TextField based on the visibility of the initial text
     val textFieldTopPadding by animateDpAsState(
         targetValue = if (showInitialText) 32.dp else 0.dp,
         animationSpec = tween(durationMillis = 500), label = ""
@@ -63,7 +61,6 @@ fun SearchScreen(
             .background(color = SecondaryColor)
             .padding(10.dp),
     ) {
-        // AnimatedVisibility for the initial text
         AnimatedVisibility(
             visible = showInitialText,
             enter = fadeIn(animationSpec = tween(1000)),
@@ -71,18 +68,18 @@ fun SearchScreen(
         ) {
             Column {
                 Image(
-                    painter = painterResource(R.drawable.github), // Replace with your image resource ID
-                    contentDescription = null, // Provide a description if needed for accessibility
+                    painter = painterResource(R.drawable.github),
+                    contentDescription = null,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp) // Horizontal padding
-                        .align(Alignment.CenterHorizontally) // Center horizontally
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "Who are you looking for?",
                     color = FadedBlack,
                     style = TextStyle(
-                        fontSize = 28.sp, // Adjust font size
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         shadow = Shadow(
                             color = FadedBlack,
@@ -90,8 +87,8 @@ fun SearchScreen(
                         )
                     ),
                     modifier = Modifier
-                        .padding(horizontal = 16.dp) // Horizontal padding
-                        .align(Alignment.CenterHorizontally) // Center horizontally
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         }
@@ -135,13 +132,11 @@ fun SearchScreen(
             }
         }
 
-        // Display a loading indicator if the app is in a loading state
         if (isLoading) {
             Spacer(modifier = Modifier.height(16.dp))
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         }
 
-        // Display search results with pagination
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -149,10 +144,11 @@ fun SearchScreen(
                 .padding(top = 16.dp)
         ) {
             items(users) { user ->
-                UserItem(user)
+                UserItem(user = user, onClick = { selectedUser ->
+                    onUserClick(selectedUser)
+                })
             }
 
-            // Show loading indicator at the bottom if more data is being loaded
             if (isPaginating) {
                 item {
                     LinearProgressIndicator(
@@ -162,7 +158,6 @@ fun SearchScreen(
             }
         }
 
-        // Trigger pagination when scrolling to the bottom
         LaunchedEffect(listState) {
             snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                 .collect { lastVisibleItemIndex ->
@@ -175,7 +170,7 @@ fun SearchScreen(
 }
 
 @Composable
-fun UserItem(user: User) {
+fun UserItem(user: User, onClick: (User) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
@@ -185,6 +180,7 @@ fun UserItem(user: User) {
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
+            .clickable { onClick(user) }
     ) {
         Row(
             modifier = Modifier
