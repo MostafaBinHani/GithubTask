@@ -23,28 +23,27 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
         setContent {
             VoisTaskTheme {
-                Surface(color = MaterialTheme.colorScheme.background){
+                Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
                     val searchRepo = SearchRepo()
                     val userRepository = UserRepository(searchRepo)
-                    NavHost(navController = navController, startDestination = "search" ) {
-                        composable("search"){
-
-                            SearchScreen(viewModel = remember { SearchViewModel(userRepository) } ,
-                                onUserClick =
-                                { user ->
+                    NavHost(navController = navController, startDestination = "search") {
+                        composable("search") {
+                            SearchScreen(
+                                viewModel = remember { SearchViewModel(userRepository) },
+                                onUserClick = { user ->
                                     navController.navigate("details/${user.login}")
                                 }
                             )
                         }
                         composable("details/{login}") { backStackEntry ->
                             val login = backStackEntry.arguments?.getString("login") ?: return@composable
-                            DetailsScreen(detailsViewModel = remember {
-                                DetailsViewModel(userRepository = userRepository )
-                            }
-                                ,login = login)
+                            DetailsScreen(
+                                detailsViewModel = remember { DetailsViewModel(userRepository) },
+                                login = login,
+                                navController = navController // Pass NavController to DetailsScreen
+                            )
                         }
-
                     }
                 }
             }
