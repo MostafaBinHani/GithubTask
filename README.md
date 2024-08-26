@@ -13,7 +13,6 @@ Technologies Used
 API Endpoints
 - Search Users: https://api.github.com/search/users?q={user}&page=1
 - User Details: https://api.github.com/users/{user_id}
-Installation
-Clone the repository and build the project using Android Studio for Android or Xcode for iOS.
 
+Clone the repository and build the project using Android Studio for Android.
 git clone https://github.com/yourusername/github-user-search-app.git
