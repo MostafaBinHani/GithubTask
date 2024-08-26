@@ -7,9 +7,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,6 +34,7 @@ import com.example.voistask.ui.theme.PrimaryColor
 import com.example.voistask.ui.theme.SecondaryColor
 import com.example.voistask.viewModel.DetailsViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     detailsViewModel: DetailsViewModel = viewModel(),
@@ -39,109 +44,119 @@ fun DetailsScreen(
     val userDetails by detailsViewModel.userDetails.collectAsState()
     detailsViewModel.fetchUserDetails(login)
 
-    userDetails?.let { user ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp))
-        {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .align(Alignment.TopCenter)
-                    .background(PrimaryColor)
-                    .clip(CircleShape)
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = user.avatarUrl),
-                    contentDescription = "User Avatar",
-                    modifier = Modifier
-                        .size(160.dp)
-                        .align(Alignment.Center)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .padding(4.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 200.dp)
-                    .background(SecondaryColor)
-            ) {
-                Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+                title = { Text(text = "User Details" , fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    if (navController.previousBackStackEntry != null) {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    } else {
+                        // Provide an empty composable if there's no navigation icon
+                        Spacer(modifier = Modifier.width(0.dp))
+                    }
+                }
+            )
+        },
+        content = { paddingValues ->  // Properly use paddingValues here
+            userDetails?.let { user ->
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 25.dp)
-                        .background(SecondaryColor),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(
+                            start = 10.dp,
+                            top = paddingValues.calculateTopPadding(),  // Combine Scaffold top padding with custom padding
+                            end = 10.dp,
+                            bottom = 10.dp
+                        )
                 ) {
-                    Text(
-                        text = user.name ?: user.login,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 26.sp,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(top = 6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.LocationOn,
-                            contentDescription = "Location Icon ",
-                            modifier = Modifier.size(24.dp),
-                            tint = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = user.location ?: "Unknown Location ",
-                            fontSize = 20.sp,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                            .height(200.dp)
+                            .align(Alignment.TopCenter)
+                            .background(PrimaryColor)
+                            .clip(CircleShape)
                     ) {
-                        UserInfoColumn(label = "Public Repos", value = user.publicRepos.toString())
-                        UserInfoColumn(label = "Followers", value = user.followers.toString())
-                        UserInfoColumn(label = "Following", value = user.following.toString())
+                        Image(
+                            painter = rememberAsyncImagePainter(model = user.avatarUrl),
+                            contentDescription = "User Avatar",
+                            modifier = Modifier
+                                .size(160.dp)
+                                .align(Alignment.Center)
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .padding(4.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Fit
+                        )
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = user.bio ?: "No bio exists",
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        color = FadedBlack,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 200.dp)
+                            .background(SecondaryColor),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = user.name ?: user.login,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 26.sp,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(top = 6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocationOn,
+                                contentDescription = "Location Icon",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = user.location ?: "Unknown Location",
+                                fontSize = 20.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            UserInfoColumn(label = "Public Repos", value = user.publicRepos.toString())
+                            UserInfoColumn(label = "Followers", value = user.followers.toString())
+                            UserInfoColumn(label = "Following", value = user.following.toString())
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = user.bio ?: "No bio exists",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            color = FadedBlack,
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -164,3 +179,4 @@ fun UserInfoColumn(label: String, value: String) {
         )
     }
 }
+
