@@ -72,9 +72,9 @@ fun DetailsScreen(
                         .size(160.dp)
                         .align(Alignment.Center)
                         .clip(CircleShape)
-                        .background(Color.White) // White background to act as border
-                        .padding(4.dp) // Padding to create space for the border effect
-                        .clip(CircleShape), // Ensure border is circular
+                        .background(Color.White)
+                        .padding(4.dp)
+                        .clip(CircleShape),
                     contentScale = ContentScale.Fit
                 )
             }
