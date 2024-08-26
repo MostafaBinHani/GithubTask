@@ -34,7 +34,7 @@ import com.example.voistask.viewModel.DetailsViewModel
 fun DetailsScreen(
     detailsViewModel: DetailsViewModel = viewModel(),
     login: String,
-    navController: NavController // Add NavController as a parameter
+    navController: NavController
 ) {
     val userDetails by detailsViewModel.userDetails.collectAsState()
     detailsViewModel.fetchUserDetails(login)
@@ -87,7 +87,7 @@ fun DetailsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 24.dp)
+                        .padding(top = 25.dp)
                         .background(SecondaryColor),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -105,13 +105,13 @@ fun DetailsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
-                            contentDescription = "Location Icon",
+                            contentDescription = "Location Icon ",
                             modifier = Modifier.size(24.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = user.location ?: "Unknown Location",
+                            text = user.location ?: "Unknown Location ",
                             fontSize = 20.sp,
                             color = Color.Gray,
                             textAlign = TextAlign.Center
@@ -131,7 +131,7 @@ fun DetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = user.bio ?: "No bio available",
+                        text = user.bio ?: "No bio exists",
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
